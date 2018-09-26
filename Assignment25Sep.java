@@ -145,15 +145,6 @@ public class Assignment25Sep {
 		}
 		
 		public static void printParts(String prev,int n) {
-			if(n==1) {
-				if(prev=="") {
-					System.out.print(prev + "1");
-				}else {
-					System.out.print(prev + "+1");
-				}
-				System.out.println();
-				return;
-			}
 			for(int i=1;i<n;i++) {
 				if(prev=="") {
 					System.out.print(prev+ i+"+"+(n-i));
