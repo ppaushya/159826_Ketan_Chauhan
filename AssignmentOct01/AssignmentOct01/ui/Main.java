@@ -6,6 +6,7 @@ import java.util.Scanner;
 import main.Account;
 import main.Address;
 import main.Customer;
+import util.Validator;
 
 public class Main {
 	static Scanner scanner = new Scanner(System.in);
@@ -13,28 +14,43 @@ public class Main {
 	static Customer current;
 	
 	public static void addCustomer(int id) {
-		/*System.out.println("Enter name: ");
-		String name = scanner.next();
-
+		String name="";
+		while(!Validator.validateName(name)) {
+			System.out.println("Enter name: ");
+			name = scanner.next();
+		}
+		
 		System.out.println("Enter street name: ");
 		String streenName = scanner.next();
 		System.out.println("Enter area: ");
 		String area = scanner.next();
-		System.out.println("Enter city: ");
-		String city = scanner.next();
-		System.out.println("Enter state: ");
-		String state = scanner.next();
+		String city="";
+		while(!Validator.validateCity(city)) {
+			System.out.println("Enter city: ");
+			city = scanner.next();
+		}
+		String state="";
+		while(!Validator.validateState(state)) {
+			System.out.println("Enter state: ");
+			state = scanner.next();
+		}
 		Address address = new Address(streenName,area,city,state);
 
-		System.out.println("Enter mobile: ");
-		String mobile = scanner.next();
-		System.out.println("Enter email: ");
-		String email = scanner.next();
+		String mobile="";
+		while(!Validator.validateMobileNumber(mobile)) {
+			System.out.println("Enter mobile number: ");
+			mobile = scanner.next();
+		}
+		String email="";
+		while(!Validator.validateEmail(state)) {
+			System.out.println("Enter email: ");
+			email = scanner.next();
+		}
 		
-		customers[id] = new Customer(id,name,address,mobile,email);*/
+		customers[id] = new Customer(id,name,address,mobile,email);
 
-		Address address = new Address("streenName","area","city","state");
-		customers[id] = new Customer(id,"name",address,"mobile","email");
+//		Address address = new Address("streenName","area","city","state");
+//		customers[id] = new Customer(id,"name",address,"mobile","email");
 	}
 	
 	public static void doTasks() {
@@ -63,11 +79,11 @@ public class Main {
 		
 		
 		//add customer
-		for(int i=0;i<5;i++) {
+		for(int i=0;i<2;i++) {
 			addCustomer(i);
 		}
 		System.out.println("\nAll Customers:");
-		for(int i=0;i<5;i++) {
+		for(int i=0;i<2;i++) {
 			customers[i].printCustomer();
 		}
 
