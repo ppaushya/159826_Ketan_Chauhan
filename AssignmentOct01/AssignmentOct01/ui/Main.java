@@ -1,19 +1,21 @@
 package ui;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import main.Account;
 import main.Customer;
 import main.Transaction;
 import util.AccountType;
+import util.Validator;
 
 public class Main {
 	static Scanner scanner = new Scanner(System.in);
-	static Customer[] customers;
-	static Transaction[] transactions = new Transaction[100];
+	static ArrayList<Customer> customers;
+	static ArrayList<Transaction> transactions = new ArrayList<>();
 	
-	public static void printCustomers() {
+	public static void printAllCustomers() {
 		System.out.println("Available customers: ");
 		customers = AccountTransaction.loadCustomer();
 		for(Customer customer:customers) {
@@ -21,11 +23,11 @@ public class Main {
 		}
 	}
 	
-	public static boolean printAccounts(Customer customer) {
+	public static boolean printAccountsOfCustomer(Customer customer) {
 		if(customer.getNoOfAccount()==0) {
 			return false;
 		}
-		Account[] accounts = customer.getAccounts();
+		ArrayList<Account> accounts = customer.getAccounts();
 		System.out.println("Available accounts: ");
 		for(Account account:accounts) {
 			if(account!=null) {
@@ -35,7 +37,7 @@ public class Main {
 		return true;
 	}
 	
-	public static void printAccountType() {
+	public static void printAllAccountTypes() {
 		AccountType[] accountTypes = AccountType.values();
 		int count=0;
 		for(AccountType accountType : accountTypes) {
@@ -44,7 +46,7 @@ public class Main {
 		
 	}
 	
-	public static AccountType assignAccountType(int value) {
+	public static AccountType getAccountTypeFromValue(int value) {
 		switch (value) {
 			case 1:
 				return AccountType.SAVINGS;
@@ -60,7 +62,7 @@ public class Main {
 		}
 	}
 	
-	private static Customer findCustomer(int customerId) {
+	private static Customer findCustomerFromId(int customerId) {
 		for(Customer customer:customers) {
 			if(customer.getCustomerId()==customerId) {
 				return customer;
@@ -69,8 +71,8 @@ public class Main {
 		return null;
 	}
 	
-	private static Account findAccount(Customer customer,int accountNo) {
-		Account[] accounts = customer.getAccounts();
+	private static Account findAccountFromAccountNumber(Customer customer,int accountNo) {
+		ArrayList<Account> accounts = customer.getAccounts();
 		for(Account account:accounts) {
 			if(account!=null) {
 				if(account.getAccountNo()==accountNo) {
@@ -82,55 +84,44 @@ public class Main {
 	}
 	
 	private static void addTransaction(Transaction transaction) {
-		for(int i=0;i<transactions.length;i++) {
-			if(transactions[i]==null) {
-				transactions[i]=transaction;
-				break;
-			}
-		}
+		transactions.add(transaction);
 	}
 	
-	private static void printTransactions(Account account) {
+	private static void printTransactionsOfAccount(Account account) {
 		System.out.println();
-		int count=0;
-		
-		System.out.println("All Transactions: ");
-		for(int i=0;i<transactions.length;i++) {
-			if(transactions[i]!=null) {
-				if(transactions[i].getAccount().getAccountNo()==account.getAccountNo()) {
-					count++;
-					System.out.println(transactions[i].toString());
-				}
-			}
-		}
-		if(count==0) {
+		if(transactions.size()==0) {
 			System.out.println("No Transactions");
 			return;
 		}
+		System.out.println("All Transactions: ");
+		for(Transaction transaction:transactions) {
+			if(transaction.getAccount().getAccountNo()==account.getAccountNo()) {
+				System.out.println(transaction.toString());
+			}
+		}
+		
 	}
 	
 	private static void printAllTransactions() {
 		System.out.println();
-		if(transactions[0]==null) {
+		if(transactions.size()==0) {
 			System.out.println("No Transactions");
 			return;
 		}
 		System.out.println("All Transactions: ");
-		for(int i=0;i<transactions.length;i++) {
-			if(transactions[i]!=null) {
-				System.out.println(transactions[i].toString());
-			}
+		for(Transaction transaction:transactions) {
+			System.out.println(transaction.toString());
 		}
 	}
 
 	private static Customer getCustomerFromUser() {
-		printCustomers();
+		printAllCustomers();
 		Customer customer=null;
 		
 		while(customer==null) {
 			System.out.println("Choose customer id: ");
 			int customerId = scanner.nextInt();
-			customer = findCustomer(customerId);
+			customer = findCustomerFromId(customerId);
 			if(customer==null) {
 				System.out.println("Invalid customer id");
 			}
@@ -149,6 +140,7 @@ public class Main {
 			System.out.println("4. Exit");
 			System.out.println("Enter your choice[1,2,3,4]: ");
 			choice = scanner.nextInt();
+			System.out.println(choice);
 			if(choice<1 || choice>4) {
 				System.out.println("Sorry! Invalid choice. Please try again!");
 			}
@@ -156,126 +148,140 @@ public class Main {
 		return choice;
 	}
 	
+	private static Account addAccountFromUser() {
+		Account account = new Account();
+		account.setAccountNo(AccountTransaction.generateAccountNo());
+		
+		System.out.println();
+		System.out.println("Enter account details:");
+		AccountType accountType=null;
+		int accountTypeNo;
+		while(accountType==null) {
+			System.out.println("Enter account type");
+			printAllAccountTypes();
+			accountTypeNo = scanner.nextInt();
+			accountType = getAccountTypeFromValue(accountTypeNo);
+		}
+		account.setAccountType(accountType);
+		
+		/*System.out.println("Enter year:");
+		int year = scanner.nextInt();
+		System.out.println("Enter month:");
+		int month = scanner.nextInt();
+		System.out.println("Enter day:");
+		int day = scanner.nextInt();
+		LocalDate date = LocalDate.of(year, month, day);*/
+		
+		account.setOpeningDate(getDateFromUser("Enter account opening date[dd-mm-yyyy]:"));
+		
+		System.out.println("Enter account opening balance:");
+		double balance = scanner.nextDouble();
+		account.setOpeningBalance(balance);
+		
+		System.out.println(account.toString());
+		return account;
+	}
+	
+	private static LocalDate getDateFromUser(String message) {
+		String date="";
+		while(!Validator.validateDate(date)) {
+//			System.out.println("Enter account opening date[dd-mm-yyyy]:");
+			System.out.println(message);
+			date = scanner.next();
+		}
+		String dateParts[] = date.split("-");
+		return LocalDate.of(Integer.parseInt(dateParts[2]), Integer.parseInt(dateParts[1]), Integer.parseInt(dateParts[0]));
+	}
+	
+	private static Account selectAccountFromUser(Customer customer) {
+		int accountChoice;
+		Account account=null;
+		while(account==null) {
+			System.out.println("Enter account number: ");
+			accountChoice = scanner.nextInt();
+			account = findAccountFromAccountNumber(customer,accountChoice);
+			if(account==null) {
+				System.out.println("Invalid account number");
+			}
+		}
+		return account; 
+	}
+	
+	private static int getTransactionChoiceFromUser() {
+		int transactionChoice=0;
+		while(transactionChoice<1 || transactionChoice>2) {
+			System.out.println("1. Debit");
+			System.out.println("2. Credit");
+			System.out.println("Enter transaction type: ");
+			transactionChoice = scanner.nextInt();
+			if(transactionChoice<1 || transactionChoice>2) {
+				System.out.println("Invalid transaction type");	
+			}
+		}
+		return transactionChoice;
+	}
+	
+	private static void makeTransaction(Account account,int transactionChoice) {
+		Transaction transaction = new Transaction();
+		transaction.setTransactionId(AccountTransaction.generatetransactionNo());
+		transaction.setTransactionDate(LocalDate.now());
+		transaction.setAccount(account);
+		System.out.println("Enter amount: ");
+		double amount = scanner.nextDouble();
+		
+		if(transactionChoice==1) {
+			double balance = account.getCurrentBalanceAfterTransactions(transactions);
+			if(balance<amount) {
+				System.out.println("Insufficient balance.");
+				return;
+			}
+			transaction.setTransactionType("Debit");
+		}else if (transactionChoice==2) {
+			transaction.setTransactionType("Credit");
+		}	
+		transaction.setAmount(amount);
+		addTransaction(transaction);
+		System.out.println(transaction);
+		printCurrentBalance(account);
+		//printAllTransactions();
+	}
+	
+	private static void printCurrentBalance(Account account) {
+		System.out.println("Current balance: "+account.getCurrentBalanceAfterTransactions(transactions));
+	}
+	
 	public static void main(String[] args) {
 		Customer customer = getCustomerFromUser();
 		
 		int choice=0;		
-		int accountTypeNo;
 		do {
 			choice = getTaskChoiceFromUser();
 			
 			if(choice==1) {
-				Account account = new Account();
-				account.setAccountNo(AccountTransaction.generateAccountNo());
-				
-				System.out.println();
-				System.out.println("Enter account details:");
-				AccountType accountType=null;
-				while(accountType==null) {
-					System.out.println("Enter account type");
-					printAccountType();
-					accountTypeNo = scanner.nextInt();
-					accountType = assignAccountType(accountTypeNo);
-				}
-				account.setAccountType(accountType);
-				
-				System.out.println("Enter account opening date:");
-				System.out.println("Enter year:");
-				int year = scanner.nextInt();
-				System.out.println("Enter month:");
-				int month = scanner.nextInt();
-				System.out.println("Enter day:");
-				int day = scanner.nextInt();
-				LocalDate date = LocalDate.of(year, month, day);
-				account.setOpeningDate(date);
-				
-				System.out.println("Enter account opening balance:");
-				double balance = scanner.nextDouble();
-				account.setOpeningBalance(balance);
-				
-				System.out.println(account.toString());
+				Account account = addAccountFromUser();
 				customer.addAccount(account);
 				choice=0;
-				//System.out.println(customer.toString());
 			}else if(choice==2) {
-				if(!printAccounts(customer)) {
+				if(!printAccountsOfCustomer(customer)) {
 					System.out.println("You are having no accounts. Please add account.");
 					choice=0;
 					continue;
 				}
-				int accountChoice;
-				Account account=null;
-				while(account==null) {
-					System.out.println("Enter account number: ");
-					accountChoice = scanner.nextInt();
-					account = findAccount(customer,accountChoice);
-					if(account==null) {
-						System.out.println("Invalid account number");
-					}
-				}
 				
-				int transactionChoice=0;
-				while(transactionChoice<1 || transactionChoice>2) {
-					System.out.println("1. Debit");
-					System.out.println("2. Credit");
-					System.out.println("Enter transaction type: ");
-					transactionChoice = scanner.nextInt();
-					if(transactionChoice<1 || transactionChoice>2) {
-						System.out.println("Invalid transaction type");	
-					}
-				}
+				Account account=selectAccountFromUser(customer);
 				
-				
-				if(transactionChoice==1) {
-					Transaction transaction = new Transaction();
-					transaction.setTransactionId(AccountTransaction.generatetransactionNo());
-					transaction.setTransactionDate(LocalDate.now());
-					transaction.setTransactionType("Debit");
-					transaction.setAccount(account);
-					
-					System.out.println("Enter amount: ");
-					double amount = scanner.nextDouble();
-					double balance = account.getCurrentBalanceAfterTransactions(transactions);
-					if(balance<amount) {
-						System.out.println("Insufficient balance.");
-					}else {
-						transaction.setAmount(amount);
-						addTransaction(transaction);
-						System.out.println("Current balance: "+account.getCurrentBalanceAfterTransactions(transactions));
-						//printAllTransactions();
-					}
-				}else if(transactionChoice==2){
-					Transaction transaction = new Transaction();
-					transaction.setTransactionId(AccountTransaction.generatetransactionNo());
-					transaction.setTransactionDate(LocalDate.now());
-					transaction.setTransactionType("Credit");
-					transaction.setAccount(account);
-					
-					System.out.println("Enter amount: ");
-					double amount = scanner.nextDouble();
-					transaction.setAmount(amount);
-					addTransaction(transaction);
-					System.out.println("Current balance: "+account.getCurrentBalanceAfterTransactions(transactions));
-					//printAllTransactions();
-				}
+				int transactionChoice=getTransactionChoiceFromUser();
+				makeTransaction(account,transactionChoice);
 				choice=0;				
 			}else if(choice==3){
-				if(!printAccounts(customer)) {
+				if(!printAccountsOfCustomer(customer)) {
 					System.out.println("You are having no accounts. Please add account.");
 					choice=0;
 					continue;
 				}
-				int accountChoice;
-				Account account=null;
-				while(account==null) {
-					System.out.println("Enter account number: ");
-					accountChoice = scanner.nextInt();
-					account = findAccount(customer,accountChoice);
-					if(account==null) {
-						System.out.println("Invalid account number");
-					}
-				}
-				printTransactions(account);
+				
+				Account account=selectAccountFromUser(customer);
+				printTransactionsOfAccount(account);
 				//printAllTransactions();
 				choice=0;		
 			}else if(choice==4){
