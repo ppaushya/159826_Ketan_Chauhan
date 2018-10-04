@@ -1,6 +1,7 @@
 package main;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import util.AccountType;
 
@@ -80,5 +81,15 @@ public class Account {
 		return balance;
 	}
 	
-	
+	public double getCurrentBalanceAfterTransactions(ArrayList<Transaction> transactions) {
+		double balance = openingBalance;
+		for(Transaction transaction:transactions) {
+			if(transaction.getTransactionType().equals("Debit")) {
+				balance -= transaction.getAmount();
+			}else if(transaction.getTransactionType().equals("Credit")) {
+				balance += transaction.getAmount();
+			}
+		}
+		return balance;
+	}
 }
