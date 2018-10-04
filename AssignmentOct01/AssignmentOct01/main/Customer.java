@@ -1,13 +1,14 @@
 package main;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Customer {
 	
 	private int customerId;
 	private String name;
 	private Address address;
-	private Account accounts[]=new Account[5];
+//	private Account accounts[]=new Account[5];
+	private ArrayList<Account> accounts=new ArrayList<>();
 	private String mobileNo;
 	private String emailId;
 	
@@ -24,7 +25,7 @@ public class Customer {
 		this.emailId = emailId;
 	}
 	
-	public Customer(int customerId, String name, Address address, Account[] accounts, String mobileNo, String emailId) {
+	public Customer(int customerId, String name, Address address, ArrayList<Account> accounts, String mobileNo, String emailId) {
 		super();
 		this.customerId = customerId;
 		this.name = name;
@@ -58,11 +59,11 @@ public class Customer {
 		this.address = address;
 	}
 
-	public Account[] getAccounts() {
+	public ArrayList<Account> getAccounts() {
 		return accounts;
 	}
 
-	public void setAccounts(Account[] accounts) {
+	public void setAccounts(ArrayList<Account> accounts) {
 		this.accounts = accounts;
 	}
 
@@ -85,26 +86,15 @@ public class Customer {
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", name=" + name + ", address=" + address + ", accounts="
-				+ Arrays.toString(accounts) + ", mobileNo=" + mobileNo + ", emailId=" + emailId + "]";
+				+ accounts + ", mobileNo=" + mobileNo + ", emailId=" + emailId + "]";
 	}
 	
 	public void addAccount(Account account) {
-		for(int i=0;i<accounts.length;i++) {
-			if(accounts[i]==null) {
-				accounts[i]=account;
-				break;
-			}
-		}
+		this.accounts.add(account);
 	}
 	
 	public int getNoOfAccount() {
-		int count=0;
-		for(int i=0;i<accounts.length;i++) {
-			if(accounts[i]!=null) {
-				count++;
-			}
-		}
-		return count;
+		return this.accounts.size();
 	}
 	
 }
