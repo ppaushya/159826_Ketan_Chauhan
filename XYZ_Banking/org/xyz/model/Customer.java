@@ -12,7 +12,7 @@ public class Customer {
 	private String emailId;
 	private String mobileNo;
 	private Address address;
-	private Set<Account> accounts;
+	private Set<Account> accounts = new HashSet<Account>();
 	
 	public Customer() {
 		super();
