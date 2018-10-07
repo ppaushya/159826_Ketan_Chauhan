@@ -9,4 +9,6 @@ public interface ICustomerDao {
 	public List<Customer> getAllCustomers();
 	
 	public void createCustomer(Customer customer);
+	
+	public Customer getCustomerFromCustomerId(long customerId);
 }
