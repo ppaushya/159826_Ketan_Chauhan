@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.xyz.model.Account;
 import org.xyz.model.Customer;
+import org.xyz.util.IdGenerator;
 
 public class AccountDaoImpl implements IAccountDao{
 
@@ -31,6 +32,7 @@ public class AccountDaoImpl implements IAccountDao{
 	}
 
 	public void createAccount(Account account) {
+		account.setAccountNumber(IdGenerator.generateAccountNumber());
 		customer.getAccounts().add(account);
 	}
 
