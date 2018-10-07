@@ -2,7 +2,7 @@ package assignment;
 
 import java.util.Scanner;
 
-public class Assignment25Sep {
+public class AssignmentSep25 {
 
 	public static void main(String[] args) {
 		
