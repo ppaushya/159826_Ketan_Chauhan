@@ -5,84 +5,127 @@ import java.util.Set;
 
 import org.xyz.model.Account;
 import org.xyz.model.Customer;
+import org.xyz.model.Transaction;
 import org.xyz.service.AccountServiceImpl;
 import org.xyz.service.CustomerServiceImpl;
 import org.xyz.service.IAccountService;
 import org.xyz.service.ICustomerService;
+import org.xyz.service.ITransactionService;
+import org.xyz.service.TransactionServiceImpl;
 
 public class BootClass {
 
+	static ICustomerService customerService = new CustomerServiceImpl();
+	static ITransactionService transactionService = new TransactionServiceImpl();
+	
 	public static void main(String[] args) {
 
-//		Customer customer = UserInterface.promptCustomer();
-//		System.out.println(customer.getCustomerDetails());
-		
-		ICustomerService customerService = new CustomerServiceImpl();
+		handleTasks();
+	}
+	
+	private static void handleTasks() {
 
 		do {
-			int choice = UserInterface.getTaskChoiceFromUser();
+			int choice = UserMenu.getTaskChoiceFromUser();
 			switch (choice) {
 				case 1:
-					Customer customer = UserInterface.promptCustomer();
+					Customer customer = UserPrompt.promptCustomer();
 					boolean success = customerService.createCustomer(customer);
 					if(success) {
-						UserInterface.printMessage("Customer added successfully.");
+						UserDisplay.printMessage("Customer added successfully.");
 					}else {
-						UserInterface.printMessage("Invalid customer.");
+						UserDisplay.printMessage("Invalid customer.");
 					}
 					break;
 				case 2:
 					List<Customer> customers = customerService.getAllCustomers();
-					UserInterface.printCustomers(customers);
+					UserDisplay.printCustomers(customers);
 					break;
 				case 3:
-					Customer currentCustomer = UserInterface.getCustomerFromCustomerId();
+					Customer currentCustomer = UserPrompt.getCustomerFromPromptedCustomerId();
 					handleCustomerTasks(currentCustomer);
 					break;
 				case 4:
-					UserInterface.printMessage("Thank you!");
+					UserDisplay.printMessage("Thank you!");
 					System.exit(0);
 					break;
 				default:
 					break;
 			}
-		}while(UserInterface.getRepeatConfirmation());
+		}while(UserMenu.getRepeatConfirmation());
 
-		UserInterface.printMessage("Thank you!");
+		UserDisplay.printMessage("Thank you!");
 		System.exit(0);
-		
 	}
 	
 	private static void handleCustomerTasks(Customer currentCustomer) {
 		IAccountService accountService = new AccountServiceImpl(currentCustomer);
 		
 		do {
-			int choice = UserInterface.getCustomerTaskChoiceFromUser();
+			int totalAccounts = currentCustomer.getAccounts().size();
+			int choice = UserMenu.getCustomerTaskChoiceFromUser();
 			switch (choice) {
 				case 1:
-					Account account = UserInterface.promptAccount();
+					Account account = UserPrompt.promptAccount();
 					boolean success = accountService.createAccount(account);
 					if(success) {
-						UserInterface.printMessage("Account added successfully.");
+						UserDisplay.printMessage("Account added successfully.");
 					}else {
-						UserInterface.printMessage("Invalid account.");
+						UserDisplay.printMessage("Invalid account.");
 					}
 					break;
 				case 2:
-					Set<Account> accounts = accountService.getAllAccounts();
-					UserInterface.printAccountsOfCustomer(accounts);
+					if(totalAccounts>0) {
+						UserDisplay.printAccountsOfCustomer(currentCustomer);
+						Account currentAccount = UserPrompt.getAccountFromPromptedAccountId(accountService);
+						handleTransactionTasks(currentCustomer,currentAccount,accountService.getCurrentBalanceOfAccount(currentAccount));
+					}else {
+						UserDisplay.printMessage("No account present.");
+					}
 					break;
 				case 3:
-					
+					if(totalAccounts>0) {
+						UserDisplay.printTransactionsOfCustomer(transactionService.getAllTransactionsOfCustomer(currentCustomer));
+					}else {
+						UserDisplay.printMessage("No account present.");
+					}
 					break;
 				case 4:
-					UserInterface.printMessage("Thank you!");
-					System.exit(0);
-					break;
+					if(totalAccounts>0) {
+						UserDisplay.printAccountsOfCustomer(currentCustomer);
+						Account acc = UserPrompt.getAccountFromPromptedAccountId(accountService);
+						UserDisplay.printCurrentBalance(accountService.getCurrentBalanceOfAccount(acc));
+					}else {
+						UserDisplay.printMessage("No account present.");
+					}break;
+				case 5:
+					return;
 				default:
 					break;
 			}
-		}while(UserInterface.getRepeatConfirmation());
+		}while(UserMenu.getRepeatConfirmation());
 	}
 
+	private static void handleTransactionTasks(Customer currentCustomer,Account account,double currentBalance) {
+		
+		int choice = UserMenu.getTransactionTypeChoiceFromUser();
+		switch (choice) {
+			case 1:
+				Transaction transactionDebit = UserPrompt.promptTransaction(account,currentBalance, 1);
+				if(transactionDebit!=null) {
+					transactionService.createTransaction(transactionDebit);
+				}else {
+					UserDisplay.printMessage("Insufficient balance");
+				}
+				break;
+			case 2:
+				Transaction transactionCredit = UserPrompt.promptTransaction(account,currentBalance, 2);
+				transactionService.createTransaction(transactionCredit);
+				break;
+			case 3:
+				return;
+			default:
+				break;
+		}
+	}
 }
