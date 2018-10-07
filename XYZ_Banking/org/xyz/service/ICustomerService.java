@@ -6,7 +6,9 @@ import org.xyz.model.Customer;
 
 public interface ICustomerService {
 
-	public void createCustomer(Customer customer) ;
+	public boolean createCustomer(Customer customer) ;
 	
 	public List<Customer> getAllCustomers();
+	
+	public Customer getCustomerFromCustomerId(long customerId);
 }
