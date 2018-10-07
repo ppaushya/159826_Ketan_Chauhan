@@ -11,6 +11,7 @@ public interface IAccountService {
 	
 	public Set<Account> getAllAccounts();
 	
-	public Account getAccountFromAccountId(int accountId);
+	public Account getAccountFromAccountId(long accountId);
 
+	public double getCurrentBalanceOfAccount(Account account);
 }
