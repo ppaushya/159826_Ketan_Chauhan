@@ -11,9 +11,12 @@ public class CustomerServiceImpl implements ICustomerService{
 
 	private ICustomerDao customerDao = new CustomerDaoImpl();
 	
-	public void createCustomer(Customer customer) {
+	public boolean createCustomer(Customer customer) {
 		if(isValidCustomer(customer)) {
 			customerDao.createCustomer(customer);
+			return true;
+		}else {
+			return false;
 		}
 	}
 
@@ -31,5 +34,10 @@ public class CustomerServiceImpl implements ICustomerService{
 
 	public List<Customer> getAllCustomers() {
 		return customerDao.getAllCustomers();
+	}
+
+	@Override
+	public Customer getCustomerFromCustomerId(long customerId) {
+		return customerDao.getCustomerFromCustomerId(customerId);
 	}
 }
