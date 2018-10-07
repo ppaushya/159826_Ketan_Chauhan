@@ -2,14 +2,19 @@ package org.xyz.util;
 
 public class IdGenerator {
 
-	private static long currentAccountNumber = 159826000000l;
-	private static long currentTransactionNumber = 15982600000000l;
+	private static long currentCustomerNumber = 1598263300l;
+	private static long currentAccountNumber = 1598261100l;
+	private static long currentTransactionNumber = 159826990000l;
+	
+	public static long generateCustomerNumber() {
+		return ++currentCustomerNumber;
+	}
 	
 	public static long generateAccountNumber() {
 		return ++currentAccountNumber;
 	}
 	
-	public static long generatetransactionNumber() {
+	public static long generateTransactionNumber() {
 		return ++currentTransactionNumber;
 	}
 }
