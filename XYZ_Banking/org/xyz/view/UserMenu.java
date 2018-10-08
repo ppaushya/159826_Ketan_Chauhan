@@ -50,8 +50,9 @@ public class UserMenu {
 			System.out.println();
 			System.out.println("1. Debit");
 			System.out.println("2. Credit");
-			System.out.println("3. Cancel");
-			System.out.println("Enter your choice[1,2,3]: ");
+			System.out.println("3. Fund Transfer");
+			System.out.println("4. Cancel");
+			System.out.println("Enter your choice[1,2,3,4]: ");
 			choice = scanner.nextInt();
 			if(choice<1 || choice>3) {
 				System.out.println("Sorry! Invalid choice. Please try again!");
