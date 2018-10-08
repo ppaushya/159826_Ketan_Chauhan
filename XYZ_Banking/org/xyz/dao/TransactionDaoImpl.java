@@ -35,10 +35,10 @@ public class TransactionDaoImpl implements ITransactionDao{
 
 	@Override
 	public Set<Transaction> getAllTransactionsOfAccount(Account Account) {
-		Set<Transaction> customerTransactions = new HashSet<>();
+		Set<Transaction> customerTransactions = new HashSet();
 		
 		for(Transaction transaction:transactions) {
-			if(transaction.getFromAccount().equals(Account)) {
+			if(transaction.getFromAccount().equals(Account) || transaction.getToAccount().equals(Account)) {
 				customerTransactions.add(transaction);
 			}
 		}
