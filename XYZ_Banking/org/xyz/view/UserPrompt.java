@@ -122,7 +122,31 @@ public class UserPrompt {
 			transaction.setTransactionType("Debit");
 		}else if (transactionChoice==2) {
 			transaction.setTransactionType("Credit");
-		}	
+		}
+		transaction.setAmount(amount);
+		
+		System.out.println(transaction);
+		return transaction;
+	}
+	
+	public static Transaction promptFundTransferTransaction(Customer currentCustomer,Account account,double currentBalance,IAccountService accountService) {
+		Transaction transaction = new Transaction();
+		
+		transaction.setTransactionDate(LocalDate.now());
+		transaction.setFromAccount(account);
+		
+		System.out.println("Enter amount: ");
+		double amount = scanner.nextDouble();
+		
+		if(currentBalance<amount) {
+			return null;
+		}
+		transaction.setTransactionType("Fund Transfer");
+		System.out.println("Choose account:");
+		UserDisplay.printAccountsOfCustomer(currentCustomer);
+		Account toAccount = getAccountFromPromptedAccountId(accountService);
+		transaction.setToAccount(toAccount);
+		
 		transaction.setAmount(amount);
 		
 		System.out.println(transaction);
