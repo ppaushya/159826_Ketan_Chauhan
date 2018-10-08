@@ -76,9 +76,7 @@ public class BootClass {
 					break;
 				case 2:
 					if(totalAccounts>0) {
-						UserDisplay.printAccountsOfCustomer(currentCustomer);
-						Account currentAccount = UserPrompt.getAccountFromPromptedAccountId(accountService);
-						handleTransactionTasks(currentCustomer,currentAccount,accountService.getCurrentBalanceOfAccount(currentAccount));
+						handleTransactionTasks(currentCustomer,accountService);
 					}else {
 						UserDisplay.printMessage("No account present.");
 					}
@@ -106,12 +104,15 @@ public class BootClass {
 		}while(UserMenu.getRepeatConfirmation());
 	}
 
-	private static void handleTransactionTasks(Customer currentCustomer,Account account,double currentBalance) {
-		
+	private static void handleTransactionTasks(Customer currentCustomer,IAccountService accountService) {
+		UserDisplay.printAccountsOfCustomer(currentCustomer);
+		Account account = UserPrompt.getAccountFromPromptedAccountId(accountService);
+		double balance = accountService.getCurrentBalanceOfAccount(account);
+				
 		int choice = UserMenu.getTransactionTypeChoiceFromUser();
 		switch (choice) {
 			case 1:
-				Transaction transactionDebit = UserPrompt.promptTransaction(account,currentBalance, 1);
+				Transaction transactionDebit = UserPrompt.promptTransaction(account,balance, 1);
 				if(transactionDebit!=null) {
 					transactionService.createTransaction(transactionDebit);
 				}else {
@@ -119,10 +120,14 @@ public class BootClass {
 				}
 				break;
 			case 2:
-				Transaction transactionCredit = UserPrompt.promptTransaction(account,currentBalance, 2);
+				Transaction transactionCredit = UserPrompt.promptTransaction(account,balance, 2);
 				transactionService.createTransaction(transactionCredit);
 				break;
 			case 3:
+				Transaction transactionFundTransfer = UserPrompt.promptFundTransferTransaction(currentCustomer,account,balance,accountService);
+				transactionService.createTransaction(transactionFundTransfer);
+				return;
+			case 4:
 				return;
 			default:
 				break;
