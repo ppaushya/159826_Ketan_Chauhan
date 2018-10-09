@@ -14,3 +14,4 @@
 | October 04 Thu | [XYZ_Banking/org/xyz](XYZ_Banking/org/xyz) | Banking project. |
 | October 05 Fri | [XYZ_Banking/org/xyz](XYZ_Banking/org/xyz) | Banking project. |
 | October 08 Mon | [XYZ_Banking_8_10_18.zip](XYZ_Banking_8_10_18.zip) | Banking project. JDBC integrated. |
+| October 09 Tue | [GamePortal.zip](GamePortal.zip) | JDBC, junit, log4j |
